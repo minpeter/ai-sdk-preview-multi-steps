@@ -21,6 +21,11 @@ export default function Home() {
       label: "are in the word strawberry?",
       action: "How many 'r's are in the word strawberry?",
     },
+    {
+      title: "Which is bigger",
+      label: "6.11 or 6.9?",
+      action: "Which is bigger, 6.11 or 6.9?",
+    },
   ];
 
   return (
