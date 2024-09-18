@@ -3,6 +3,8 @@ import { friendli } from "@friendliai/ai-provider";
 import { convertToCoreMessages, streamText } from "ai";
 import { z } from "zod";
 
+import { search, SearchResult } from "duck-duck-scrape";
+
 export async function POST(request: Request) {
   const { messages } = await request.json();
 
@@ -10,7 +12,16 @@ export async function POST(request: Request) {
 
   const result = await streamText({
     // model: openai("gpt-4o-mini"),
-    model: friendli("meta-llama-3.1-70b-instruct"),
+    model: friendli("meta-llama-3.1-70b-instruct", {
+      tools: [
+        // {
+        //   type: "web:search",
+        // },
+        {
+          type: "code:python-interpreter",
+        },
+      ],
+    }),
     system: systemMessage,
     messages: convertToCoreMessages(messages),
     maxSteps: 10,
@@ -28,6 +39,33 @@ export async function POST(request: Request) {
             ),
         }),
         execute: async (params) => params,
+      },
+      webSearch: {
+        description: `This tool is designed for searching DuckDuckGo for the desired query.\n`,
+        parameters: z.object({
+          query: z.string().describe("The query to search for."),
+        }),
+        execute: async ({ query }: { query: string }) => {
+          const searchResult = await search(query).then((res) => {
+            return res;
+          });
+
+          if (searchResult.noResults) {
+            return {
+              message: `No results found for "${query}".`,
+            };
+          }
+
+          const result = {
+            message: `Here are the search results for "${query}"`,
+            data: searchResult.results.map((result: SearchResult) => ({
+              title: result.title,
+              url: result.url,
+              description: result.description.replace(/<\/?[^>]+(>|$)/g, ""),
+            })),
+          };
+          return JSON.stringify(result);
+        },
       },
     },
   });
