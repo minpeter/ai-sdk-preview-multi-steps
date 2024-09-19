@@ -17,9 +17,9 @@ export async function POST(request: Request) {
         // {
         //   type: "web:search",
         // },
-        {
-          type: "code:python-interpreter",
-        },
+        // {
+        //   type: "code:python-interpreter",
+        // },
       ],
     }),
     system: systemMessage,
