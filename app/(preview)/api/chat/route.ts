@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { friendli } from "@friendliai/ai-provider";
 import { convertToCoreMessages, streamText } from "ai";
 import { z } from "zod";
 
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     - Have at least one step where you explain things slowly (breaking things onto different lines).
     - USE FIRST PRINCIPLES AND MENTAL MODELS (like thinking through the question backwards).
     - If you need to count letters, separate each letter by one dash on either side and identify it by the iterator.
-    - When checking your work, do it from the perspective of Albert Einstein, who is looking for mistakes.
+    - When checking your work, do it from the perspective of **Albert Einstein**, who is looking for mistakes.
 
     NOTE, YOUR FIRST ANSWER MIGHT BE WRONG. Check your work twice.
 
@@ -33,11 +33,12 @@ export async function POST(request: Request) {
     `;
 
   const result = await streamText({
-    model: openai("gpt-4o-mini"),
+    model: friendli("meta-llama-3.1-70b-instruct"),
     system: systemMessage,
     messages: convertToCoreMessages(messages),
-    maxSteps: 10,
+    maxSteps: 8,
     experimental_toolCallStreaming: true,
+    temperature: 0.5,
     tools: {
       addAReasoningStep: {
         description: "Add a step to the reasoning process.",
@@ -46,12 +47,12 @@ export async function POST(request: Request) {
           content: z
             .string()
             .describe(
-              "The content of the reasoning step. WRITE OUT ALL OF YOUR WORK. Where relevant, prove things mathematically.",
+              "The content of the reasoning step. WRITE OUT ALL OF YOUR WORK. Where relevant, prove things mathematically."
             ),
           nextStep: z
             .enum(["continue", "finalAnswer"])
             .describe(
-              "Whether to continue with another step or provide the final answer",
+              "Whether to continue with another step or provide the final answer"
             ),
         }),
         execute: async (params) => params,

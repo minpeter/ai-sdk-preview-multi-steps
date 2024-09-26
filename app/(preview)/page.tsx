@@ -39,13 +39,13 @@ export default function Home() {
                   <MasonryIcon />
                 </p>
                 <p className="text-center">
-                  Multi-step generations with gpt-4o-mini (
+                  Multi-step generations with llama-3.1-70b (
                   <Link
                     className="text-blue-500 dark:text-blue-400"
-                    href="https://openai.com"
+                    href="https://friendli.ai"
                     target="_blank"
                   >
-                    OpenAI
+                    FriendliAI
                   </Link>
                   ) and the{" "}
                   <Link
